@@ -73,13 +73,11 @@ Eigen::Vector2d MyBugAlgorithm::moveForward(std::vector<amp::Obstacle2D> obstacl
 
         if (isPointInsidePolygon(pointNext, polygon)) {
             if (mode == "go2goal") {
-                std::cout<<"leave go2goal \n";
+                // std::cout<<"leave go2goal \n";
                 mode = "boundary following";
                 pointHit = pointNext;
             }
-            std::cout<<"collision \n";
-
-
+            // std::cout<<"collision \n";
             Eigen::Vector2d frontVec;
             Eigen::Vector2d rightVec;
             while (isPointInsidePolygon(pointNext, polygon) || !isPointInsidePolygon(pointRight, polygon)) {
@@ -111,27 +109,13 @@ Eigen::Vector2d MyBugAlgorithm::moveForward(std::vector<amp::Obstacle2D> obstacl
                 
                 // Update the total turning angle
                 totalTurnAngle += turnAngle;
-
-                // std::cout << "current': " << pointCurrent.x() << ", " << pointCurrent.y() << std::endl;
-                // std::cout << "next':    " << pointNext.x() << ", " << pointNext.y() << std::endl;
-                // std::cout << "next distance':   " << (pointNext - pointCurrent).norm() << std::endl;
-                // std::cout << "right':   " << pointRight.x() << ", " << pointRight.y() << std::endl;
-                // std::cout << "right distance':   " << (pointRight - pointCurrent).norm() << std::endl;
-                // PAUSE;
                 
                 // Break out of the while loop if the maximum turning angle is reached
                 if (totalTurnAngle >= maxTurnAngleThreshold) {
-                    std::cout << "turned 360"<< std::endl;
+                    // std::cout << "turned 360"<< std::endl;
                     return errorVector;
                 }
             }
-            if (!isPointInsidePolygon(pointNext, polygon)){
-                std::cout << "front out GOOD"<< std::endl;
-            }
-            if (isPointInsidePolygon(pointRight, polygon)){
-                std::cout << "right in GOOD"<< std::endl;
-            }
-\
         } 
     }
     
@@ -179,12 +163,7 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
             stepSize = 0.1;
             turnAngle = 0.1;
             pointNext = moveForward(obstacles, pointCurrent, q_goal - pointCurrent, stepSize, turnAngle);
-            // if (mode == "boundary following"){
-            //     std::cout << "break \n";
-            //     pointCurrent = pointNext;
-            //     path.waypoints.push_back(pointCurrent);
-            //     break;
-            // }
+
         }
         else if (mode =="boundary following"){
             stepSize = 0.05;
@@ -193,19 +172,13 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
             Eigen::Vector2d pointPrev = path.waypoints[path.waypoints.size() - 2]; // Get the point before pointCurrent
             direction = pointCurrent - pointPrev;
             pointNext = moveForward(obstacles, pointCurrent, direction, stepSize, turnAngle);
-            // std::cout << "next:    " << pointNext.x() << ", " << pointNext.y() << std::endl;
-            // std::cout << "error:    " << errorVector.x() << ", " << errorVector.y() << std::endl;
-            // std::cout << "diff:    " << std::abs(pointNext.x() - errorVector.x()) << std::endl;
+
             
             if (std::abs(pointNext.x() - errorVector.x()) < error){
-                std::cout << "Error: Robot rotated 360 degrees"<< std::endl;
+                std::cout << "------------------ERROR: Robot rotated 360 degrees------------------"<< std::endl;
                 return path;
             }
             direction = pointNext - pointCurrent;
-
-            // pointCurrent = pointNext;
-            // path.waypoints.push_back(pointCurrent);
-            // break;
 
             // Maintain right point in the obstacle 
             Eigen::Vector2d stepVector = direction.normalized() * stepSize;
@@ -215,7 +188,6 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
             // Iterate through obstacles
             for (const amp::Obstacle2D& obstacle : obstacles) {
                 const std::vector<Eigen::Vector2d> polygon = obstacle.verticesCCW();
-
                 // Check if pointRight is inside the polygon
                 if (isPointInsidePolygon(pointRight, polygon)) {
                     rightIn = 1;
@@ -223,16 +195,15 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
                 
             }
             if (rightIn == 0){
-                std::cout << "right out\n";
+                // std::cout << "right out\n";
                 pointNext = pointRight;
             }
 
             // Bug2 handling: Check if pointNext is on the line q_goal - q_init
             if (algorithm == 2){
-                std::cout << "dist to leave point:    " << std::abs((q_init-pointNext).norm() + (q_goal-pointNext).norm() - mLine.norm()) << std::endl;
                 if ( std::abs((q_init-pointNext).norm() + (q_goal-pointNext).norm() - mLine.norm()) < error) {
                     mode = "go2goal"; // Switch to go2goal mode
-                    std::cout<<"leave boundary following \n";
+                    // std::cout<<"leave boundary following \n";
                 }
             }
 
@@ -247,21 +218,19 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
             }
 
             // check if polygon hit point reached
-
-            std::cout << "dist to start': " << (pointNext - pointHit).norm() << std::endl;
             if ( ((pointNext - pointHit).norm() < error) && ((pointPrev - pointHit).norm() <= error) ) {
                 if (algorithm == 1){
                     bug1exit = true;
                 }
                 else if (algorithm == 2 && mode == "boundary following") {
-                    std::cout << "Error: Robot traversed entire obstacle (bug2)"<< std::endl;
+                    std::cout << "------------------ERROR: Robot traversed entire obstacle (bug2)------------------"<< std::endl;
                     return path;
                 }
             }
             if (algorithm == 1 && (pointNext - pointLeaveBug1).norm() < error && bug1exit == true){
                 bug1exit = false;
                 mode = "go2goal";
-                std::cout<<"leave boundary following \n";
+                // std::cout<<"leave boundary following \n";
             }
 
         }
