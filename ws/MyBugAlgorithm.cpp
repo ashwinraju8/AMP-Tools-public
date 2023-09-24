@@ -53,10 +53,6 @@ bool MyBugAlgorithm::isPointInsidePolygon(const Eigen::Vector2d& point, const st
     return false; // Point is outside all triangles, and thus outside the polygon
 }
 
-// isCollision(const Eigen::Vector2d& point, const std::vector<Eigen::Vector2d>& polygon){
-    
-// }
-
 Eigen::Vector2d MyBugAlgorithm::moveForward(std::vector<amp::Obstacle2D> obstacles, const Eigen::Vector2d& pointCurrent, const Eigen::Vector2d& direction, 
                                             double stepSize, double turnAngle) {
     
@@ -121,9 +117,6 @@ Eigen::Vector2d MyBugAlgorithm::moveForward(std::vector<amp::Obstacle2D> obstacl
     
     return pointNext;
 }
-
-
-
 
 // Implement your methods in the `.cpp` file, for example:
 amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algorithm) {
