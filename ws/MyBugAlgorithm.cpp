@@ -22,6 +22,8 @@ void MyBugAlgorithm::calculateBarycentricCoordinates(const Eigen::Vector2d& poin
 
 // Define a function to check if a point is inside a polygon
 bool MyBugAlgorithm::isPointInsidePolygon(const Eigen::Vector2d& point, const std::vector<Eigen::Vector2d>& polygon) {
+
+    // http://wscg.zcu.cz/wscg2004/Papers_2004_Full/B83.pdf
     if (polygon.size() < 3) {
         // Cannot check, return false for empty or insufficient vertices
         return false;
@@ -78,7 +80,12 @@ Eigen::Vector2d MyBugAlgorithm::moveForward(std::vector<amp::Obstacle2D> obstacl
             Eigen::Vector2d rightVec;
             while (isPointInsidePolygon(pointNext, polygon) || !isPointInsidePolygon(pointRight, polygon)) {
                 // Turn left incrementally
-            
+                // if(isPointInsidePolygon(pointNext, polygon)){
+                //     std::cout<<"front obstructed \n";
+                // }
+                // if(!isPointInsidePolygon(pointRight, polygon)){
+                //     std::cout<<"right out \n";
+                // }
 
                 frontVec = pointNext - pointCurrent;
                 frontVec = frontVec.normalized() * stepSize;
@@ -147,14 +154,14 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
     double maxTurnAngleThreshold = 2.0 * M_PI;
 
     int idxCurrent = 0;
-
-    while (idxCurrent<5000) {
+    int maxIdx = 10000;
+    while (idxCurrent<maxIdx) {
 
         Eigen::Vector2d pointNext;
         if (mode == "go2goal"){
 
-            stepSize = 0.1;
-            turnAngle = 0.1;
+            stepSize = 0.05;
+            turnAngle = 0.05;
             pointNext = moveForward(obstacles, pointCurrent, q_goal - pointCurrent, stepSize, turnAngle);
 
         }
@@ -211,8 +218,10 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
             }
 
             // check if polygon hit point reached
-            if ( ((pointNext - pointHit).norm() < error) && ((pointPrev - pointHit).norm() <= error) ) {
+
+            if ( ((pointNext - pointHit).norm() < error) && !((pointPrev - pointHit).norm() <= error) ) {
                 if (algorithm == 1){
+                    // std::cout << "exit point reached------------------------------------"<<  std::endl;
                     bug1exit = true;
                 }
                 else if (algorithm == 2 && mode == "boundary following") {
@@ -220,22 +229,26 @@ amp::Path2D MyBugAlgorithm::pathPlanner(const amp::Problem2D& problem, int algor
                     return path;
                 }
             }
+            
             if (algorithm == 1 && (pointNext - pointLeaveBug1).norm() < error && bug1exit == true){
                 bug1exit = false;
                 mode = "go2goal";
-                // std::cout<<"leave boundary following \n";
+                // std::cout<<"leave boundary following------------------------------- \n";
             }
 
         }
         pointCurrent = pointNext;
         path.waypoints.push_back(pointCurrent);
         idxCurrent++;
-
+        // std::cout << mode << std::endl;
         if ((q_goal - pointCurrent).norm() < error){
             pointCurrent = q_goal;
             path.waypoints.push_back(q_goal);
             break;
         }
+    }
+    if (idxCurrent>maxIdx){
+        std::cout << "------------------ERROR: Timeout------------------"<< std::endl;
     }
 
     return path;

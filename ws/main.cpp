@@ -28,12 +28,12 @@ int main(int argc, char** argv) {
     /*    Randomly generate the problem     */ 
 
     // Use WO1 from Exercise 2
-    Problem2D problem = HW2::getWorkspace1();
+    // Problem2D problem = HW2::getWorkspace1();
 
     // Use WO2 from Exercise 2
-    /*
+
     Problem2D problem = HW2::getWorkspace2();
-    */
+
 
     // Make a random environment spec, edit properties about it such as the number of obstacles
     /*
@@ -52,8 +52,6 @@ int main(int argc, char** argv) {
     
     {
 
-        // Bug 1 or Bug 2
-        int algorithm = 1;
 
         // Call your algorithm on the problem
         // amp::Path2D path = algo.plan(problem);
@@ -73,25 +71,26 @@ int main(int argc, char** argv) {
         // Check your path to make sure that it does not collide with the environment 
         bool success = HW2::check(path, problem);
 
-        LOG("Found valid solution to workspace 1: " << (success ? "Yes!" : "No :("));
+        LOG("Found valid solution to workspace 2: " << (success ? "Yes!" : "No :("));
+        LOG("path length: " << path.length());
 
         // Visualize the path and environment
         Visualizer::makeFigure(problem, path);
     }
 
     // Let's get crazy and generate a random environment and test your algorithm
-    {
-        amp::Path2D path; // Make empty path, problem, and collision points, as they will be created by generateAndCheck()
-        amp::Problem2D random_prob; 
-        std::vector<Eigen::Vector2d> collision_points;
-        bool random_trial_success = HW2::generateAndCheck(algo, path, random_prob, collision_points);
-        LOG("Found valid solution in random environment: " << (random_trial_success ? "Yes!" : "No :("));
+    // {
+    //     amp::Path2D path; // Make empty path, problem, and collision points, as they will be created by generateAndCheck()
+    //     amp::Problem2D random_prob; 
+    //     std::vector<Eigen::Vector2d> collision_points;
+    //     bool random_trial_success = HW2::generateAndCheck(algo, path, random_prob, collision_points);
+    //     LOG("Found valid solution in random environment: " << (random_trial_success ? "Yes!" : "No :("));
 
-        LOG("path length: " << path.length());
+    //     LOG("path length: " << path.length());
 
-        // Visualize the path environment, and any collision points with obstacles
-        Visualizer::makeFigure(random_prob, path, collision_points);
-    }
+    //     // Visualize the path environment, and any collision points with obstacles
+    //     Visualizer::makeFigure(random_prob, path, collision_points);
+    // }
 
     Visualizer::showFigures();
 
