@@ -31,7 +31,6 @@ int main(int argc, char** argv) {
     // Problem2D problem = HW2::getWorkspace1();
 
     // Use WO2 from Exercise 2
-
     Problem2D problem = HW2::getWorkspace2();
 
 
