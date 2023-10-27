@@ -2,6 +2,7 @@
 #include "AMPCore.h"
 #include <Eigen/LU>
 #include <Eigen/SVD>
+#include <cmath>
 
 namespace amp {
     

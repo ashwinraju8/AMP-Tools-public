@@ -116,6 +116,11 @@ class GridCSpace2D : public ConfigurationSpace2D, public DenseArray2D<bool> {
         /// @return A pair (i, j) of indices that correspond to the cell that (x0, x1) is in
         virtual std::pair<std::size_t, std::size_t> getCellFromPoint(double x0, double x1) const = 0;
 
+        /// @brief Given a cell in discretized space that is between the bounds, find point in the center of that cell 
+        /// @param indexX0 index of cell on x0 axis
+        /// @param indexX1 index of cell on x1 axis
+        /// @return A vector holding the point in space that the cell represents
+        virtual Eigen::Vector2d getPointFromCell(std::size_t indexX0, std::size_t indexX1) const = 0;
         /*****************************************/
 
         /// @brief I have overridded this method for you. This method uses the `getCellFromPoint` to determine which cell (x0, x1) is in,

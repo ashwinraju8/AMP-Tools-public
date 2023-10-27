@@ -68,7 +68,7 @@ class AStar {
         /// @param problem Search problem containing init/goal nodes and graph
         /// @param heuristic Heuristic function that maps each node to a "cost-to-go"
         /// @return The optimal node path and path cost (if the heuristic is admissible)
-        virtual GraphSearchResult search(const amp::ShortestPathProblem& problem, const amp::SearchHeuristic& heuristic) = 0;
+        virtual AStar::GraphSearchResult search(const amp::ShortestPathProblem& problem, const amp::SearchHeuristic& heuristic) = 0;
 
         virtual ~AStar() {}
 };

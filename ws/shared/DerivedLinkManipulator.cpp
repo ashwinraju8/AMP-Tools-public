@@ -36,7 +36,39 @@ Eigen::MatrixXd LinkManipulator::computeJacobian(const ManipulatorState& theta) 
     return jacobian;
 }
 ManipulatorState LinkManipulator::getConfigurationFromIK(const Eigen::Vector2d& end_effector_location) const {
-    ManipulatorState theta(nLinks(), M_PI/4.0);  // initial guess
+
+    if (nLinks() == 2){
+        std::cout << "2 link" << std::endl;
+        Eigen::VectorXd theta(2);
+
+        double L1 = getLinkLengths()[0];
+        double L2 = getLinkLengths()[1];
+
+        double x = end_effector_location(0);
+        double y = end_effector_location(1);       
+        double r = sqrt(x*x + y*y);
+
+        std::cout << "end effector: (" << x << ", " << y << ")" << std::endl;
+        std::cout << "links: (" << L1 << ", " << L2 << ")" << std::endl;
+
+        // check that possition is reachable
+        if (r > L1 + L2 || r < std::abs(L1 - L2)) {
+            std::cerr << "The desired position is unreachable." << std::endl;
+            theta << NAN, NAN;
+            return theta;
+        }
+
+        double theta2 = std::acos((x*x + y*y - L1*L1 - L2*L2) / (2 * L1 * L2));
+        double alpha = std::asin(L2 * std::sin(theta2) / r);
+        double beta = std::atan2(y, x);
+
+        theta(0) = beta + alpha; // theta1
+        theta(1) = theta2; // theta2
+
+        return theta;
+    }
+
+    Eigen::VectorXd theta = Eigen::VectorXd::Constant(nLinks(), M_PI/4.0);  // initial guess
 
     const double alpha = 0.01;  // learning rate (optimization parameter)
     const double tolerance = 1e-4;  // error tolerance
@@ -69,10 +101,16 @@ ManipulatorState LinkManipulator::getConfigurationFromIK(const Eigen::Vector2d& 
         Eigen::MatrixXd pseudoInverse = svd.matrixV() * singularValues.asDiagonal() * svd.matrixU().adjoint();
 
         Eigen::VectorXd resultEigen = alpha * pseudoInverse * error;
-        ManipulatorState dTheta(resultEigen.data(), resultEigen.data() + resultEigen.size());
+        ManipulatorState dTheta = resultEigen;
 
         for (std::size_t i = 0; i < nLinks(); ++i) {
             theta[i] += dTheta[i];
+
+            // Normalize the angle to be within [0, 2pi)
+            theta[i] = std::fmod(theta[i], 2 * M_PI);
+            if (theta[i] < 0) {
+                theta[i] += 2 * M_PI;
+            }
         }
 
         // std::cout << "error is: " << error.norm() << std::endl;
@@ -86,9 +124,8 @@ ManipulatorState LinkManipulator::getConfigurationFromIK(const Eigen::Vector2d& 
 
         idx++;
     }
-
     return theta;
 }
 
-}
+} // namespace amp
 

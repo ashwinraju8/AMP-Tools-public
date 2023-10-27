@@ -63,7 +63,8 @@ void problem1b(){
 void problem2a(){
     std::vector<double> linkLengths = {0.5, 1, 0.5};
 
-    ManipulatorState state = {M_PI/6, M_PI/3, 7*M_PI/4};
+    ManipulatorState state(3);  // Specify the size of the vector, which is 3 in this case
+    state << M_PI/6, M_PI/3, 7*M_PI/4;  // Then fill it
 
     LinkManipulator manipulator(linkLengths);
 
@@ -93,20 +94,22 @@ void problem3a(){
 
     Environment2D ws = HW4::getEx3Workspace1();
     std::vector<amp::Obstacle2D> obstacles = ws.obstacles;
-    double x0_min = ws.x_min;
-    double x0_max = ws.x_max;
-    double x1_min = ws.y_min;
-    double x1_max = ws.y_max;
+    double x0_min = 0;
+    double x0_max = 2*M_PI;
+    double x1_min = 0;
+    double x1_max = 2*M_PI;
+    // std::cout << x0_min << std::endl;
 
-    std::size_t x0_cells = 100;
-    std::size_t x1_cells = 100;
+    std::size_t x0_cells = 50;
+    std::size_t x1_cells = 50;
 
-    std::vector<double> linkLengths = {1, 1, 1};
+    std::vector<double> linkLengths = {1, 1};
     LinkManipulator manipulator(linkLengths);
 
-    CSpace2DLinkManipulator cSpace(x0_cells, x1_cells, x0_min, x0_max, x1_min, x1_max, manipulator, obstacles);
+    MyGridCSpace2DConstructor gridCSpace(x0_cells, x1_cells, x0_min, x0_max, x1_min, x1_max);
+    std::unique_ptr<amp::GridCSpace2D> cSpace = gridCSpace.construct(manipulator, ws);
 
-    Visualizer::makeFigure(cSpace);
+    Visualizer::makeFigure(*cSpace);
 
     Visualizer::showFigures();
     
@@ -116,20 +119,21 @@ void problem3b(){
 
     Environment2D ws = HW4::getEx3Workspace2();
     std::vector<amp::Obstacle2D> obstacles = ws.obstacles;
-    double x0_min = ws.x_min;
-    double x0_max = ws.x_max;
-    double x1_min = ws.y_min;
-    double x1_max = ws.y_max;
+    double x0_min = 0;
+    double x0_max = 2*M_PI;
+    double x1_min = 0;
+    double x1_max = 2*M_PI;
 
-    std::size_t x0_cells = 100;
-    std::size_t x1_cells = 100;
+    std::size_t x0_cells = 50;
+    std::size_t x1_cells = 50;
 
-    std::vector<double> linkLengths = {1, 1, 1};
+    std::vector<double> linkLengths = {1, 1};
     LinkManipulator manipulator(linkLengths);
 
-    CSpace2DLinkManipulator cSpace(x0_cells, x1_cells, x0_min, x0_max, x1_min, x1_max, manipulator, obstacles);
+    MyGridCSpace2DConstructor gridCSpace(x0_cells, x1_cells, x0_min, x0_max, x1_min, x1_max);
+    std::unique_ptr<amp::GridCSpace2D> cSpace = gridCSpace.construct(manipulator, ws);
 
-    Visualizer::makeFigure(cSpace);
+    Visualizer::makeFigure(*cSpace);
 
     Visualizer::showFigures();
     
@@ -139,20 +143,21 @@ void problem3c(){
 
     Environment2D ws = HW4::getEx3Workspace3();
     std::vector<amp::Obstacle2D> obstacles = ws.obstacles;
-    double x0_min = ws.x_min;
-    double x0_max = ws.x_max;
-    double x1_min = ws.y_min;
-    double x1_max = ws.y_max;
+    double x0_min = 0;
+    double x0_max = 2*M_PI;
+    double x1_min = 0;
+    double x1_max = 2*M_PI;
 
-    std::size_t x0_cells = 100;
-    std::size_t x1_cells = 100;
+    std::size_t x0_cells = 50;
+    std::size_t x1_cells = 50;
 
-    std::vector<double> linkLengths = {1, 1, 1};
+    std::vector<double> linkLengths = {1, 1};
     LinkManipulator manipulator(linkLengths);
 
-    CSpace2DLinkManipulator cSpace(x0_cells, x1_cells, x0_min, x0_max, x1_min, x1_max, manipulator, obstacles);
+    MyGridCSpace2DConstructor gridCSpace(x0_cells, x1_cells, x0_min, x0_max, x1_min, x1_max);
+    std::unique_ptr<amp::GridCSpace2D> cSpace = gridCSpace.construct(manipulator, ws);
 
-    Visualizer::makeFigure(cSpace);
+    Visualizer::makeFigure(*cSpace);
 
     Visualizer::showFigures();
     
@@ -167,9 +172,9 @@ int main(int argc, char** argv) {
     // problem1b();
     // problem2a();
     // problem2b();
-    problem3a();
+    // problem3a();
     // problem3b();
-    // problem3c();
+    problem3c();
 
     // CSpace2DLinkManipulator constructor{};
     // LinkManipulator MyLinkManipulator;
