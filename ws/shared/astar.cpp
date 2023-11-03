@@ -70,7 +70,7 @@ amp::AStar::GraphSearchResult MyAStarAlgo::search(const amp::ShortestPathProblem
             result.path_cost = g_values[goal_node];
             // std::cout << "path returned" << std::endl;
             // LOG("af");
-            std::cout << "idx: " << idx << std::endl;
+            // std::cout << "idx: " << idx << std::endl;
             return result;
         }
 
