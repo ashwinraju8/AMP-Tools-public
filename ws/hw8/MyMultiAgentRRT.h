@@ -5,6 +5,8 @@
 #include "hw/HW8.h"
 #include "HelpfulClass.h"
 
+using namespace amp;
+
 class MyCentralizedMultiAgentRRT : public amp::CentralizedMultiAgentRRT {
 public:
     MyCentralizedMultiAgentRRT(int max_iterations, double step_size, double goal_bias_probability, double goal_radius);
@@ -18,8 +20,8 @@ private:
     std::vector<Eigen::Vector2d> sampleFree() const;
     std::vector<int> findNearest(const std::vector<Eigen::Vector2d>& samples) const;
     std::vector<Eigen::Vector2d> steer(const std::vector<Eigen::Vector2d>& nearest, const std::vector<Eigen::Vector2d>& sample) const;
-    bool checkCollisionBetweenRobots(const std::vector<Eigen::Vector2d>& positions, double radius) const;
-    bool isPathValid(const std::vector<Eigen::Vector2d>& start, const std::vector<Eigen::Vector2d>& end, const MultiAgentProblem2D& problem, double robotRadius) const;
+    bool checkCollisionBetweenRobots(const std::vector<Eigen::Vector2d>& start, const std::vector<Eigen::Vector2d>& end) const;
+    bool isPathValid(const std::vector<Eigen::Vector2d>& start, const std::vector<Eigen::Vector2d>& end) const;
     std::vector<std::vector<int>> reconstructPaths(const std::vector<int>& goalIndices) const;
 
     // RRT specific variables for multi-agent
