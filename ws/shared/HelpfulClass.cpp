@@ -156,26 +156,6 @@ int tools::orientation(const Eigen::Vector2d& p, const Eigen::Vector2d& q, const
     return (val > 0) ? 1 : 2; // clock or counterclockwise
 }
 
-
-double tools::minDistanceBetweenSegments(const Eigen::Vector2d& a1, const Eigen::Vector2d& b1, const Eigen::Vector2d& a2, const Eigen::Vector2d& b2) {
-    // Find the closest points on each segment to the endpoints of the other segment
-    Eigen::Vector2d closestOn1ToA2 = closestPointOnSegment(a2, a1, b1);
-    Eigen::Vector2d closestOn1ToB2 = closestPointOnSegment(b2, a1, b1);
-    Eigen::Vector2d closestOn2ToA1 = closestPointOnSegment(a1, a2, b2);
-    Eigen::Vector2d closestOn2ToB1 = closestPointOnSegment(b1, a2, b2);
-
-    // Calculate the distances from the endpoints to the closest points
-    double distA2toSeg1 = (a2 - closestOn1ToA2).norm();
-    double distB2toSeg1 = (b2 - closestOn1ToB2).norm();
-    double distA1toSeg2 = (a1 - closestOn2ToA1).norm();
-    double distB1toSeg2 = (b1 - closestOn2ToB1).norm();
-
-    // Find the minimum of these distances
-    double minDist = std::min({distA2toSeg1, distB2toSeg1, distA1toSeg2, distB1toSeg2});
-
-    return minDist;
-}
-
 Eigen::Vector2d tools::distanceObstacle(const Eigen::Vector2d& q, const amp::Obstacle2D& obstacle) {
     // vector pointing from closest point to robot
     Eigen::Vector2d closestPointVector = Eigen::Vector2d::Zero();
@@ -201,6 +181,12 @@ Eigen::Vector2d tools::distanceObstacle(const Eigen::Vector2d& q, const amp::Obs
 Eigen::Vector2d tools::closestPointOnSegment(const Eigen::Vector2d& q, const Eigen::Vector2d& a, const Eigen::Vector2d& b) {
     Eigen::Vector2d ab = b - a;
     double t = (q - a).dot(ab) / ab.squaredNorm();
+
+    // Handle zero-length segment
+    if (ab.squaredNorm() < std::numeric_limits<double>::epsilon()) {
+        return a;  // a and b are the same in this case
+    }
+
     if (t < 0.0) return a;
     if (t > 1.0) return b;
     return a + t * ab;
